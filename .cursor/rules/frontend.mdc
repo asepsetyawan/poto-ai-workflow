@@ -1,0 +1,39 @@
+---
+description: Frontend feature structure, data fetching, and React conventions
+globs: apps/frontend/**/*
+alwaysApply: false
+---
+
+# Frontend conventions
+
+Work only in `apps/frontend/`. Follow feature-based layout under `src/features/<feature>/`.
+
+## Structure per feature
+
+```
+features/<name>/
+  <name>.schema.ts   # Zod schemas + inferred types (API shapes)
+  <name>.api.ts      # fetch functions via lib/api-client
+  <Name>Page.tsx     # route-level UI
+  hooks/             # optional feature hooks
+```
+
+Shared UI goes in `src/components/`. Cross-cutting helpers go in `src/lib/`.
+
+## Data & auth
+
+- Use TanStack Query for server state; keep forms local with `useState`.
+- Call the API through `apiRequest()` — never raw `fetch` scattered in components.
+- JWT lives in `auth-context` + `auth-storage`; attach via `token` option on requests.
+- Validate forms with Zod before calling mutations.
+
+## Routing
+
+- Define routes in `src/app/routes.tsx`.
+- Protect authenticated pages with `ProtectedRoute`.
+
+## Before done
+
+From repo root: `npm run typecheck && npm run lint` (and `npm run test --workspace=@ai-workflow/frontend` when tests change).
+
+For full architecture workflow, invoke `/frontend-architecture` or read `apps/frontend/.cursor/skills/frontend-architecture/SKILL.md`.

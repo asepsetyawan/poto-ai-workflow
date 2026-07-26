@@ -1,0 +1,9 @@
+{
+  "autoRun": {
+    "allow_instructions": [],
+    "block_instructions": [
+      "Every delete or remove command should go through approval first.",
+      "Every change to the database should go through approval first."
+    ]
+  }
+}

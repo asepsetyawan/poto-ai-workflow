@@ -1,0 +1,39 @@
+---
+description: Monorepo layout, workspace commands, and cross-package conventions
+alwaysApply: true
+---
+
+# Monorepo
+
+This repository is an npm workspaces monorepo:
+
+- `apps/backend` — Express + PostgreSQL API (`@ai-workflow/backend`)
+- `apps/frontend` — React + Vite SPA (`@ai-workflow/frontend`)
+
+## Commands (run from repo root)
+
+```bash
+npm run dev:backend      # API on :3000
+npm run dev:frontend     # SPA on :5173 (proxies /api to backend)
+npm run typecheck        # all workspaces
+npm run lint             # all workspaces
+npm run test             # backend integration tests
+```
+
+## Boundaries
+
+- Backend owns persistence, auth tokens, and business rules.
+- Frontend owns UI state, routing, and API consumption only.
+- Shared types live in each app; do not create a shared package unless a human approves it.
+- Run quality checks from the repo root before finishing any task.
+
+## Agent customization
+
+- **Rules** (this folder): short, always-on or file-scoped constraints.
+- **Skills**: architecture overviews in `apps/<app>/.cursor/skills/`; deep, per-library
+  patterns and the `/new-resource` scaffold in the top-level `.cursor/skills/`.
+- Repo-wide skills live in `.agents/skills/` (code review, security).
+- There is no `CLAUDE.md`/`AGENTS.md` — this rules + skills setup is the single source
+  of truth for both humans and agents.
+
+See [Cursor Rules](https://cursor.com/docs/rules.md) and [Agent Skills](https://cursor.com/docs/skills.md).

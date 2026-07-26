@@ -1,0 +1,26 @@
+---
+description: Definition of done and how the agent should work in this repo (planning, secrets, tests, PR scope)
+alwaysApply: true
+---
+
+# Workflow
+
+## Before you consider any task done
+
+From the repo root, run in order and fix everything — never report a task finished if
+any of these fail:
+
+1. `npm run typecheck`
+2. `npm run lint`
+3. `npm run test` (backend; add/update frontend tests when frontend behavior changes)
+
+## Working with the agent
+
+- Plan before changes that touch both apps or the database schema.
+- Read the reference module/feature fully (`users` in each app) before copying its
+  pattern — don't infer it from partial context.
+- Never commit `.env`, print secrets in logs, or hardcode a connection string/JWT secret.
+- Declare new dependencies explicitly in your summary — a human should see "added X
+  because Y" and be able to object before it's merged.
+- Write or update a test for every behavior change.
+- Keep changes scoped to one concern; split unrelated changes into separate commits/PRs.

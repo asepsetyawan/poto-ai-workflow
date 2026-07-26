@@ -1,0 +1,14 @@
+---
+description: Branch naming, commit message style, and PR content requirements
+alwaysApply: true
+---
+
+# Git & PR Conventions
+
+- Branches: `<type>/<short-description>` (e.g. `feat/vendor-invoices`, `fix/deploy-migration-order`).
+- Commits: imperative mood, explain _why_, not just _what_.
+- PRs: state what changed, why, and how it was tested.
+- Call out explicitly if a change touches deploy or migration behavior — reviewers
+  should look harder at that category.
+- Write down decisions of consequence (schema changes, a new dependency, a real
+  tradeoff) in the PR description at minimum, not only in chat.

@@ -1,0 +1,37 @@
+---
+description: Backend layering, module pattern, and API conventions for Express + Drizzle
+globs: apps/backend/**/*
+alwaysApply: false
+---
+
+# Backend conventions
+
+Work only in `apps/backend/`. Copy `src/modules/users/` when adding a resource.
+
+## Layering (non-negotiable)
+
+- **Routes** wire middleware + controller only.
+- **Controllers** translate HTTP ↔ service; no `db` imports.
+- **Services** hold business logic and DB access; throw `ApiError` for expected failures.
+- Wrap every controller handler in `asyncHandler`.
+- Validate body/query/params with `validate(schema)` before the controller.
+
+## Database
+
+- Schema in `src/db/schema.ts`; run `npm run db:generate` from repo root after changes.
+- Commit generated SQL under `drizzle/`.
+- UUID primary keys; include `createdAt` / `updatedAt`.
+
+## Known trade-offs
+
+- JWT auth is portable; swap `lib/jwt.ts` + `middleware/auth.ts` for a hosted provider
+  without changing the `req.auth` shape or the `requireAuth` contract.
+- `drizzle-kit`'s dev dependency chain carries a moderate esbuild advisory — accepted for
+  the CLI tool; re-check `npm audit` on upgrades.
+
+## Before done
+
+From repo root: `npm run typecheck && npm run lint && npm run test`
+
+For full architecture workflow, invoke `/backend-architecture` or read `apps/backend/.cursor/skills/backend-architecture/SKILL.md`.
+For scaffolding a new resource end-to-end, invoke `/new-resource`.
