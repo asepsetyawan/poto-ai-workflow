@@ -1,108 +1,132 @@
 # ai-workflow
 
-An Express + TypeScript + PostgreSQL API starter with a standardized, AI-native
-development workflow built in — the goal is that any developer (or Claude Code session)
-picks this up and builds new features the same way, without re-deriving conventions from
-scratch each time.
-
-See [`CLAUDE.md`](./CLAUDE.md) for the full set of conventions this repo enforces. Read
-it before your first PR — it's the same rules a human reviewer and an agent are both
-held to.
+Monorepo starter: **Express API** + **React SPA**, with an AI-native development workflow
+built entirely on Cursor's native customization — no `CLAUDE.md`/`AGENTS.md` layer, just
+[Rules](https://cursor.com/docs/rules.md) (`.cursor/rules/`) and
+[Agent Skills](https://cursor.com/docs/skills.md) (`.cursor/skills/`, `.agents/skills/`).
+Conventions live there, not in a separate doc, so they're always in context and scoped
+to the files they apply to.
 
 ## Stack
 
-- **Express 4** + TypeScript (strict mode, ESM/`NodeNext`)
-- **PostgreSQL** via **Drizzle ORM** (`drizzle-kit` for migrations, `drizzle-orm` for
-  queries)
-- **Zod** for request validation, with types inferred from schemas
-- **JWT** auth (swap for Clerk/Auth0/etc. by replacing `src/lib/jwt.ts` +
-  `src/middleware/auth.ts` — see CLAUDE.md)
-- **Pino** structured logging (`pino-http` request logs, pretty-printed in dev)
-- **Vitest** + **Supertest** for tests, run against a real Postgres instance
-- **ESLint 9 (flat config) + Prettier + Husky/lint-staged** for consistent style,
-  enforced automatically on commit
+| App      | Location        | Tech                                                         |
+| -------- | --------------- | ------------------------------------------------------------ |
+| Backend  | `apps/backend`  | Express 4, TypeScript, PostgreSQL, Drizzle, Zod, JWT, Vitest |
+| Frontend | `apps/frontend` | React 19, Vite, TanStack Query, React Router, Zod, Vitest    |
 
 ## Getting started
 
 ```bash
-cp .env.example .env          # fill in real values; never commit .env
-docker compose up -d          # starts local Postgres on :5432
+cp apps/backend/.env.example apps/backend/.env   # set DATABASE_URL, JWT_SECRET, etc.
+docker compose up -d
 npm install
-npm run db:generate           # generates SQL from src/db/schema.ts (already committed on first clone)
-npm run db:migrate            # applies migrations to DATABASE_URL
-npm run db:seed               # optional: creates dev@example.com / password123
-npm run dev                   # starts the API on :3000 with hot reload
+npm run db:migrate
+npm run db:seed                                  # optional: dev@example.com / password123
+
+npm run dev:backend                              # :3000
+npm run dev:frontend                             # :5173
 ```
 
-Verify it's running:
+Verify:
 
 ```bash
 curl http://localhost:3000/health
+open http://localhost:5173
 ```
 
-## Everyday commands
+## Everyday commands (repo root)
 
-| Command                       | What it does                                          |
-| ----------------------------- | ----------------------------------------------------- |
-| `npm run dev`                 | Start the dev server with hot reload                  |
-| `npm run typecheck`           | `tsc --noEmit` — run before every commit              |
-| `npm run lint` / `lint:fix`   | ESLint, zero warnings allowed                         |
-| `npm run format`              | Prettier, auto-fix                                    |
-| `npm run test` / `test:watch` | Vitest, requires a reachable `DATABASE_URL`           |
-| `npm run build` / `start`     | Compile to `dist/` and run the compiled server        |
-| `npm run db:generate`         | Generate a migration after editing `src/db/schema.ts` |
-| `npm run db:migrate`          | Apply pending migrations                              |
-| `npm run db:studio`           | Browser UI for inspecting the local database          |
-| `npm run db:seed`             | Insert dev seed data                                  |
+| Command                | What it does                              |
+| ---------------------- | ----------------------------------------- |
+| `npm run dev:backend`  | API with hot reload                       |
+| `npm run dev:frontend` | SPA with Vite (proxies `/api` to backend) |
+| `npm run typecheck`    | TypeScript — all workspaces               |
+| `npm run lint`         | ESLint — all workspaces                   |
+| `npm run test`         | Backend integration tests (real Postgres) |
+| `npm run build`        | Production builds                         |
 
-A pre-commit hook (Husky + lint-staged) runs ESLint/Prettier automatically on staged
-files, so basic style/lint issues can't reach a PR.
-
-## Project structure
+## Repository layout
 
 ```
-src/
-  config/       env validation + logger
-  db/           drizzle client, schema, migration/seed scripts
-  lib/          ApiError, asyncHandler, jwt, password helpers
-  middleware/   auth, validate, errorHandler, notFound
-  modules/
-    health/     liveness/readiness check (checks DB connectivity)
-    auth/       register/login, issues JWTs
-    users/      reference CRUD module — copy this pattern for every new resource
-tests/          integration tests hitting the real HTTP layer + a real DB
-drizzle/        generated SQL migrations (committed to git)
+apps/
+  backend/     Express API, Drizzle migrations, integration tests
+  frontend/    React SPA
+.cursor/
+  rules/       Always-on and file-scoped agent rules (.mdc)
+  skills/      Tech-stack skills, /new-resource, and /spec../ship lifecycle entry points
+.agents/
+  skills/      Lifecycle skills from addyosmani/agent-skills (see below)
+docs/          Engineering workflow documentation
+skills-lock.json  Locked source/version of every installed .agents skill
 ```
 
-`src/modules/users/` is the canonical example: `routes → controller → service → schema`,
-each with one job. New resources should look structurally identical. Run
-`/new-resource <name>` in Claude Code to scaffold one automatically following this
-pattern (see `.claude/commands/new-resource.md`).
+App-specific architecture skills (auto-scoped to each package in monorepos):
 
-## Working with Claude Code on this repo
+- `apps/backend/.cursor/skills/backend-architecture/`
+- `apps/frontend/.cursor/skills/frontend-architecture/`
 
-This repo ships a `CLAUDE.md` with the conventions above, plus a `.claude/commands/`
-directory with slash commands (currently: `/new-resource`) so the workflow is
-standardized across every developer's agent sessions, not just documented in a wiki
-nobody opens. When you add a new convention, add it to `CLAUDE.md` in the same PR — that
-file is the shared memory for every future session, human or agent.
+Deeper, tech-specific skills live in the top-level `.cursor/skills/` (visible under
+Cursor's Customize → Skills) and auto-surface for matching files via each skill's `paths`
+frontmatter: `express-api-layering`, `drizzle-postgres-patterns`, `jwt-auth-flow`,
+`vitest-integration-testing`, `react-query-data-layer`, `react-feature-structure`,
+`vite-react-tooling`.
 
-## Testing philosophy
+Invoke any of these in Cursor Agent with `/<skill-name>`, e.g. `/backend-architecture` or
+`/drizzle-postgres-patterns`.
 
-Tests in `tests/` run against a real Postgres instance (`docker compose up -d`) rather
-than a mocked DB layer — auth + CRUD wiring is exactly the kind of thing that looks
-correct in isolation but breaks at the integration seams (wrong status code, missed
-`await`, a schema field that doesn't round-trip). CI spins up Postgres as a service
-container so this works the same locally and in GitHub Actions (`.github/workflows/ci.yml`).
+## Testing
 
-## Known, accepted trade-offs
+Backend tests in `apps/backend/tests/` run against real Postgres locally and in CI.
+Frontend unit tests live beside features under `apps/frontend/src/`.
 
-- `drizzle-kit`'s dev-only dependency chain currently has a moderate-severity `esbuild`
-  advisory (a dev-server request-forgery issue). It only affects a local CLI tool, not
-  anything that runs in production, so this is accepted risk — re-run `npm audit` when
-  bumping `drizzle-kit`.
-- Auth is plain JWT for portability as a starter. If your real product uses a hosted
-  auth provider (Clerk, Auth0, etc.), replace `src/lib/jwt.ts` and
-  `src/middleware/auth.ts` with that provider's verification logic and keep the
-  `req.auth` shape / `requireAuth` contract the same so the rest of the codebase is
-  unaffected.
+## Agent workflow
+
+- **Rules** in `.cursor/rules/` — short, always-on or file-scoped constraints:
+  `monorepo.mdc`, `backend.mdc`, `frontend.mdc`, `workflow.mdc` (definition of done),
+  `git-conventions.mdc`.
+- **Skills** — detailed, multi-step workflows: architecture overviews per app
+  (`apps/<app>/.cursor/skills/`), deep tech-specific patterns and the `/new-resource`
+  scaffold in the top-level `.cursor/skills/`, and the full engineering lifecycle in
+  `.agents/skills/` (below).
+
+When adding a backend resource, read `apps/backend/src/modules/users/` and run
+`/new-resource` in Cursor Agent (see `.cursor/skills/new-resource/SKILL.md`).
+
+### End-to-end lifecycle (`addyosmani/agent-skills`)
+
+`.agents/skills/` carries 10 lifecycle skills from
+[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills), tracked in
+`skills-lock.json`, covering the full **Define → Plan → Build → Verify → Review → Ship**
+pipeline:
+
+| Phase  | Skill(s)                                                                   |
+| ------ | -------------------------------------------------------------------------- |
+| Meta   | `using-agent-skills` — routes any task to the right skill                  |
+| Define | `spec-driven-development`                                                  |
+| Plan   | `planning-and-task-breakdown`                                              |
+| Build  | `incremental-implementation`, `test-driven-development`                    |
+| Verify | `debugging-and-error-recovery`                                             |
+| Review | `code-review-and-quality`, `security-and-hardening`, `code-simplification` |
+| Ship   | `git-workflow-and-versioning`                                              |
+
+The upstream repo's `/spec /plan /build /test /review /ship` shortcuts live in
+Claude/Gemini-specific command folders that Cursor doesn't read, so this repo adds
+matching entry-point skills in `.cursor/skills/{spec,plan,build,test,review,ship}/` —
+each is a short pointer into the relevant `.agents/skills/` workflow plus this repo's own
+architecture skills/rules, invoked the same way: type `/spec`, `/plan`, `/build`,
+`/test`, `/review`, or `/ship` in Cursor Agent. A typical feature runs all six in order;
+a small bug fix might only need `/test` (which routes to `debugging-and-error-recovery`
+on failure) then `/review`.
+
+Manage the lifecycle skill set with the [skills CLI](https://skills.sh):
+
+```bash
+npx skills list                                                    # what's installed
+npx skills add addyosmani/agent-skills --list                      # browse all 24
+npx skills add addyosmani/agent-skills --skill <name>               # add one
+npx skills update                                                   # update to latest
+```
+
+Note: only each skill's own `SKILL.md` is installed, not the upstream `references/`
+checklists it occasionally points to (e.g. `definition-of-done.md`) — this repo's own
+`workflow.mdc` rule covers the equivalent "definition of done" instead.

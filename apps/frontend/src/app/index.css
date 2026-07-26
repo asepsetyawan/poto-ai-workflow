@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Outfit', ui-sans-serif, sans-serif;
+  --font-sans: 'Source Sans 3', ui-sans-serif, sans-serif;
+
+  --color-graphite-950: #0c1117;
+  --color-graphite-900: #141b24;
+  --color-graphite-800: #1e2836;
+  --color-graphite-700: #2a3648;
+  --color-graphite-100: #e8eef5;
+  --color-graphite-50: #f4f7fb;
+
+  --color-teal-500: #0d9488;
+  --color-teal-400: #2dd4bf;
+  --color-teal-600: #0f766e;
+
+  --animate-rise: rise 0.8s ease-out both;
+  --animate-fade-in: fade-in 0.7s ease-out both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--font-sans);
+    color: var(--color-graphite-900);
+    background: var(--color-graphite-50);
+    line-height: 1.5;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
