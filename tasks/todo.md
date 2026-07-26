@@ -1,32 +1,27 @@
-# Tasks: POTO AI Landing Page
+# Tasks: POTO AI Landing (Lumina-inspired)
 
 Spec: [`docs/specs/poto-ai-landing.md`](../docs/specs/poto-ai-landing.md)  
 Plan: [`tasks/plan.md`](./plan.md)
 
-## Phase 1: Foundation
+**Locked:** clone assets to `public/poto/` · no promo modal · brand **POTO AI** · Pricing → `/register`
 
-- [x] **Task 1:** Install Tailwind (v4 + Vite plugin preferred) + brand fonts/tokens; set `index.html` title to POTO AI
-- [x] **Task 2:** Landing-aware `AppLayout` — full-bleed on `/`, brand **POTO AI**; keep constrained shell for auth/users
+## Phase 1: Assets & chrome
+
+- [x] **Task 1:** Clone Lumina stills into `apps/frontend/public/poto/` + short README
+- [x] **Task 2:** Dark theme tokens + `AppLayout` on `/` (Pricing → `/register`, Log in → `/login`)
 
 ### Checkpoint: Foundation
 
-- [x] Tailwind + fonts work; full-bleed on `/` only; typecheck + lint clean
+- [x] Assets on disk; Pricing→register; typecheck clean
 
-## Phase 2: Core landing
+## Phase 2: Studio home
 
-- [x] **Task 3:** Rebuild `HomePage` hero (brand, headline, lede, Get started + Log in, full-bleed visual) + `HomePage.test.tsx`
-- [x] **Task 4:** Image / Video / Audio sections + license-safe assets; extend tests for three headings
-
-### Checkpoint: Core landing
-
-- [x] Hero + three capabilities + CTAs done; frontend tests pass; visual direction = graphite/teal (not purple/cream defaults)
-
-## Phase 3: Polish
-
-- [x] **Task 5:** Closing Get started CTA; ≥2 CSS motions with `motion-reduce:`; Radix `Slot` for CTA composition
+- [x] **Task 3:** `home-content.ts` + HomePage tests
+- [x] **Task 4:** Feature carousel + featured banner
+- [x] **Task 5:** Model grid + Inspiration filters
+- [x] **Task 6:** Prompt dock → `/register`; polish; tests green
 
 ### Checkpoint: Complete
 
-- [x] Spec success criteria all met
-- [x] Root: `npm run typecheck && npm run lint` + frontend tests (+ backend tests when Postgres available)
-- [ ] Ready for review / ship — run `/test` then `/review` if desired
+- [x] Spec success criteria met
+- [x] Ready for `/test` → `/review`
