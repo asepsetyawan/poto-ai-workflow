@@ -12,9 +12,19 @@
   --color-graphite-100: #e8eef5;
   --color-graphite-50: #f4f7fb;
 
-  --color-teal-500: #0d9488;
+  --color-studio-950: #070708;
+  --color-studio-900: #0e0e10;
+  --color-studio-800: #17171a;
+  --color-studio-700: #222226;
+  --color-studio-600: #2e2e34;
+  --color-studio-100: #e8e8ea;
+  --color-studio-50: #f4f4f5;
+
+  --color-teal-500: #14b8a6;
   --color-teal-400: #2dd4bf;
   --color-teal-600: #0f766e;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-300: #67e8f9;
 
   --animate-rise: rise 0.8s ease-out both;
   --animate-fade-in: fade-in 0.7s ease-out both;
