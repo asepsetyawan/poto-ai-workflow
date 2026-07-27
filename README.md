@@ -62,6 +62,7 @@ apps/
 agent-skills/  Git submodule, pinned to a commit — upstream vendor copy, source for
                syncing .cursor/{skills,references,agents}/. Not read by Cursor directly.
 docs/          Engineering workflow documentation
+  images/      Architecture & AI-workflow diagrams (manual; see docs/images/README.md)
 skills-lock.json  Record of what was last synced from agent-skills/ into .cursor/
 ```
 
