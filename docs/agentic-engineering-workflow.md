@@ -7,6 +7,12 @@
 
 ## Diagram
 
+Raster copies (editable Mermaid source remains below — preferred for diffs):
+
+![AI workflow overview](./images/ai-workflow.png)
+
+![Agent skills lifecycle](./images/lifecycle.png)
+
 ```mermaid
 flowchart TD
     Start(["New idea / task"]) --> Meta{{"using-agent-skills (meta)\nroutes work to the right skill"}}
