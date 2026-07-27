@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /ship — Ship with confidence
 
-Read and follow `.agents/skills/git-workflow-and-versioning/SKILL.md` and
+Read and follow `.cursor/skills/git-workflow-and-versioning/SKILL.md` and
 `.cursor/rules/git-conventions.mdc`.
 
 1. Confirm `/test` and `/review` both passed for every change being shipped.

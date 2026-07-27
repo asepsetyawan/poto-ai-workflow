@@ -8,14 +8,18 @@ disable-model-invocation: true
 
 Run these three review skills against the diff, in order:
 
-1. `.agents/skills/code-review-and-quality/SKILL.md` — five-axis review (correctness,
+1. `.cursor/skills/code-review-and-quality/SKILL.md` — five-axis review (correctness,
    readability, architecture, security, performance)
-2. `.agents/skills/security-and-hardening/SKILL.md` — required if the change touches
+2. `.cursor/skills/security-and-hardening/SKILL.md` — required if the change touches
    user input, auth, storage, or an external integration
-3. `.agents/skills/code-simplification/SKILL.md` — only if the review surfaced
+3. `.cursor/skills/code-simplification/SKILL.md` — only if the review surfaced
    unnecessary complexity; never simplify by changing behavior
 
 Report findings labeled Nit / Optional / FYI vs. blocking, per `code-review-and-quality`.
 Fix blocking issues before proceeding. Re-run `/test` after any fix.
+
+For a deeper single-lens pass, adopt the matching persona from `.cursor/agents/` instead
+of the general checklist: `code-reviewer.md` (staff-engineer standard), `security-auditor.md`
+(threat modeling), or run `/webperf` for `web-performance-auditor.md` on frontend changes.
 
 Next step: `/ship`.

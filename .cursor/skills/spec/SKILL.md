@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /spec — Define what to build
 
-Read and follow `.agents/skills/spec-driven-development/SKILL.md` in full before writing
+Read and follow `.cursor/skills/spec-driven-development/SKILL.md` in full before writing
 any code. Produce a short spec (objectives, boundaries, acceptance criteria) for the
 feature/change the user described, using this repo's stack and conventions
 (`.cursor/rules/`, `apps/backend/.cursor/skills/backend-architecture/`,

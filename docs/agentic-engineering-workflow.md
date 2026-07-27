@@ -160,9 +160,29 @@ flowchart LR
     class Universal,Claude,Codex,Gemini,Antigravity,Cursor,Windsurf,OpenCode,Copilot,Kiro adapter;
 ```
 
-**Note for this repo specifically:** we already followed the Cursor adapter pattern above — skills
-live under `.agents/skills/` with full text, and short enforceable policies are pulled into
-`.cursor/rules/*.mdc` / `CLAUDE.md`, rather than pasting entire skill files into always-on context.
+**Note for this repo specifically:** we followed the Cursor adapter pattern above end-to-end, per
+upstream's own
+[`docs/cursor-setup.md`](https://github.com/addyosmani/agent-skills/blob/main/docs/cursor-setup.md) —
+`.cursor/skills/` is "the source of truth for the agent." All 24 skills live there with full
+text, their 7 supporting checklists live in `.cursor/references/`, and the 4 specialist
+personas live in `.cursor/agents/` — all synced 1:1 from upstream so in-skill relative
+mentions of `references/x.md` / `agents/x.md` resolve correctly. Cursor also auto-discovers
+project skills from `.agents/skills/` (they're equivalent per
+[cursor.com/docs/skills](https://cursor.com/docs/skills)), but this repo standardized on
+`.cursor/skills/` alone since it's Cursor-only today (no `.claude/`, `.codex/`, `.zed/`, etc.).
+One consequence: the `npx skills` CLI's `add`/`update` commands hardcode `.agents/skills/` as
+their Cursor write target, so they can't manage this tree — upstream updates are synced by
+bumping the pinned `agent-skills/` git submodule (the doc's "Optional: git submodule or vendor
+clone" layout element) and `rsync`-ing its `skills/`, `references/`, and `agents/` into their
+`.cursor/` counterparts (see README). `skills-lock.json` is kept as a record of what was last
+synced. A routing rule,
+`.cursor/rules/agent-skills.mdc`, points the agent at `using-agent-skills` before non-trivial
+work, matching the doc's "Add minimal project rules" step. All 8 lifecycle commands (`/spec
+/plan /build /test /review /code-simplify /webperf /ship`) are implemented as
+`disable-model-invocation` skills under `.cursor/skills/<command>/`, since Cursor has no native
+slash-command or subagent-spawning primitive — commands read the matching persona file directly
+instead of delegating to a subagent tool. Short, enforceable policies are pulled into
+`.cursor/rules/*.mdc` rather than pasting entire skill files into always-on context.
 
 ### Skill resolution & execution flow (what happens when a skill fires)
 
@@ -200,8 +220,9 @@ sequenceDiagram
 ### Reading the technical diagrams
 
 - **One source, many adapters.** The 24 `SKILL.md` files never change per tool — only how they're
-  _surfaced_ changes: full-text install (Claude Code, Cursor `.agents/skills/`), plugin manifest
-  read (Codex), pasted-into-instructions (Copilot, Windsurf, Gemini's `GEMINI.md` path), or
+  _surfaced_ changes: full-text install (Claude Code `.claude/skills/`, Cursor `.cursor/skills/`
+  or `.agents/skills/`), plugin manifest read (Codex), pasted-into-instructions (Copilot,
+  Windsurf, Gemini's `GEMINI.md` path), or
   agent-driven lookup (OpenCode's `skill` tool). This is why the same skill pack works across 70+
   agents without a rewrite per tool.
 - **Frontmatter is the router, not the content.** `using-agent-skills` only reads each skill's
