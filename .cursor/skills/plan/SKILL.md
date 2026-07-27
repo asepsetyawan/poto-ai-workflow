@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /plan — Break it down
 
-Read and follow `.agents/skills/planning-and-task-breakdown/SKILL.md` in full. Decompose
+Read and follow `.cursor/skills/planning-and-task-breakdown/SKILL.md` in full. Decompose
 the spec (from `/spec`, or the user's request directly) into small, ordered,
 independently-verifiable tasks with acceptance criteria — e.g. "schema + migration",
 "service + tests", "routes + validation", "frontend feature", in dependency order.

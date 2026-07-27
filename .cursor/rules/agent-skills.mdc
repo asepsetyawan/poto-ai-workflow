@@ -1,0 +1,18 @@
+---
+description: Route non-trivial work through the agent-skills lifecycle in .cursor/skills/
+alwaysApply: true
+---
+
+Before starting non-trivial technical work:
+
+1. Route via `.cursor/skills/using-agent-skills/SKILL.md` — it maps the task to the right
+   skill(s) across Define → Plan → Build → Verify → Review → Ship.
+2. Read and follow the matching skill(s) under `.cursor/skills/<name>/SKILL.md` in full,
+   not just the frontmatter description.
+3. Open `.cursor/references/<name>.md` when a skill links to a `references/*.md`
+   checklist, and `.cursor/agents/<name>.md` when it points to a persona.
+4. Prefer these project skills over guessing an approach — you don't need the user to say
+   "read the skill" each time; check for an applicable one first.
+
+For the phase-by-phase entry points (`/spec /plan /build /test /review /code-simplify
+/webperf /ship`), see the command skills of the same name in `.cursor/skills/`.

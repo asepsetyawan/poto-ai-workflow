@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /test — Prove it works
 
-Read and follow `.agents/skills/test-driven-development/SKILL.md`. From the repo root:
+Read and follow `.cursor/skills/test-driven-development/SKILL.md`. From the repo root:
 
 ```bash
 npm run typecheck
@@ -16,9 +16,11 @@ npm run test --workspace=@ai-workflow/frontend     # frontend, if touched
 ```
 
 Follow `apps/backend/.cursor/skills/vitest-integration-testing` conventions for backend
-tests (happy path, 400, 404, 401 coverage per endpoint).
+tests (happy path, 400, 404, 401 coverage per endpoint). For a coverage-gap analysis
+before declaring a slice tested, adopt the `test-engineer` persona in
+`.cursor/agents/test-engineer.md` (the Prove-It pattern).
 
-If anything fails, switch to `.agents/skills/debugging-and-error-recovery/SKILL.md`:
+If anything fails, switch to `.cursor/skills/debugging-and-error-recovery/SKILL.md`:
 reproduce → localize → reduce → fix → add a regression guard — don't just patch the
 symptom. Don't report this phase done until every command above is green.
 

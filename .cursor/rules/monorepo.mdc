@@ -29,10 +29,24 @@ npm run test             # backend integration tests
 
 ## Agent customization
 
-- **Rules** (this folder): short, always-on or file-scoped constraints.
+- **Rules** (this folder): short, always-on or file-scoped constraints. `agent-skills.mdc`
+  routes non-trivial work through `using-agent-skills` first.
 - **Skills**: architecture overviews in `apps/<app>/.cursor/skills/`; deep, per-library
   patterns and the `/new-resource` scaffold in the top-level `.cursor/skills/`.
-- Repo-wide skills live in `.agents/skills/` (code review, security).
+- Repo-wide lifecycle skills (all 24 from
+  [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)) live in
+  `.cursor/skills/` — the source of truth, per upstream's own `docs/cursor-setup.md`.
+  Their supporting checklists live in `.cursor/references/` and specialist review
+  personas in `.cursor/agents/` — both synced from upstream `references/`/`agents/` 1:1,
+  so a skill file's relative mention of `references/x.md` or `agents/x.md` resolves
+  there. `agent-skills/` is a pinned git submodule (upstream vendor copy) — update it
+  with `git submodule update --remote` and `rsync` into these three folders (see
+  README) — the `npx skills` CLI writes to `.agents/skills/`, not `.cursor/skills/`, so
+  it can't manage this tree; `skills-lock.json` records the last synced state.
+- The 8 lifecycle commands (`/spec /plan /build /test /review /code-simplify /webperf
+  /ship`) live in `.cursor/skills/<command>/` as `disable-model-invocation` skills, since
+  Cursor has no native slash-command or subagent primitive — see
+  `docs/agentic-engineering-workflow.md` for the full phase diagram.
 - There is no `CLAUDE.md`/`AGENTS.md` — this rules + skills setup is the single source
   of truth for both humans and agents.
 

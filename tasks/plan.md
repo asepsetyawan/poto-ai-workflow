@@ -1,201 +1,212 @@
-# Implementation Plan: POTO AI Landing Page
+# Implementation Plan: POTO AI Landing (Lumina-inspired)
 
 ## Overview
 
-Replace the starter home page with a full-bleed marketing landing for **POTO AI** (image / video / audio generation pitch). Frontend-only: Tailwind CSS + minimal Radix, `features/home`, CTAs to existing auth routes. Spec: [`docs/specs/poto-ai-landing.md`](../docs/specs/poto-ai-landing.md).
+Rebuild `/` as a dark Lumina-style creative hub for **POTO AI**: clone reference stills into `public/poto/`, then replace the current light marketing landing with carousel, featured banner, model grid, inspiration mosaic, and floating prompt dock. Frontend-only. Spec: [`docs/specs/poto-ai-landing.md`](../docs/specs/poto-ai-landing.md).
 
 ## Architecture Decisions
 
-- **Tailwind v4 via `@tailwindcss/vite`** — matches Vite 6; entry in `src/app/index.css`. Fall back to Tailwind v3 + PostCSS only if v4 install fails.
-- **Radix `@radix-ui/react-slot` only (initially)** — compose accessible CTA buttons that can render as React Router `Link`. Add more Radix packages only if a real a11y need appears.
-- **Landing-aware `AppLayout`** — on `/`, drop the 960px cage and use transparent/overlay header so the hero can be full-bleed; keep constrained layout for `/login`, `/register`, `/users`.
-- **Keep `features/home/`** — evolve `HomePage.tsx` in place; add `HomePage.test.tsx` beside it.
-- **Assets** — license-safe Unsplash (or similar) URLs for hero + three capability visuals; optionally mirror into `public/` if remote hotlinking is unreliable in tests/CI.
-- **Motion via CSS** — Tailwind `animate-*` / keyframes + `motion-reduce:` utilities; no framer-motion unless approved later.
-- **No backend changes.**
+- **Clone assets once** from Lumina preview URLs (via browser session) into `apps/frontend/public/poto/*.jpg` (or webp). Source references `/poto/...` only — never commit tokenized CDN URLs.
+- **Dark theme tokens** in `index.css` / `@theme` for landing graphite + teal; `AppLayout` on `/` uses dark header (Pricing → `/register`, Log in → `/login`, brand POTO AI).
+- **Compose in `features/home/`** with small presentational components + `home-content.ts` for copy/asset map.
+- **No promo modal.** No new Radix Dialog dependency.
+- **Prompt dock** is decorative UX: submit/click → `navigate('/register')`.
+- **CSS motion only** (carousel transition, hover); respect `motion-reduce:`.
+- **No backend / schema changes.**
 
 ## Dependency Graph
 
 ```
-Tailwind + fonts + theme tokens
+Clone assets → public/poto/
         │
-        ├── AppLayout: POTO AI brand + full-bleed on `/`
+        ├── Dark theme tokens + AppLayout (Pricing→register)
         │
-        └── HomePage hero (brand, headline, lede, CTAs) + tests
+        └── home-content.ts + failing HomePage tests
                 │
-                ├── Image / Video / Audio sections + assets
+                ├── Carousel + Featured banner
                 │
-                └── Closing CTA + motion + Radix Slot CTAs
+                ├── Model grid + Inspiration (filters)
+                │
+                └── Prompt dock + polish / verify
 ```
 
 ## Task List
 
-### Phase 1: Foundation
+### Phase 1: Assets & chrome
 
-#### Task 1: Install and wire Tailwind + brand fonts/tokens
+#### Task 1: Clone Lumina stills into `public/poto/`
 
-**Description:** Add Tailwind (v4 + Vite plugin preferred) to `@ai-workflow/frontend`, point `index.css` at Tailwind, define graphite/teal theme tokens and Google Fonts (Syne or Outfit + Source Sans 3). Update document title to POTO AI.
+**Description:** From the live Lumina page (or captured preview URLs), download a minimal set of stills for carousel (2–3), featured banner (1), model cards (3–4), and inspiration mosaic (6–8). Save under `apps/frontend/public/poto/` with stable filenames. Add a short `public/poto/README.md` noting demo/reference origin.
 
 **Acceptance criteria:**
 
-- [ ] Tailwind utilities compile in the Vite app
-- [ ] Theme tokens exist for brand colors/fonts
-- [ ] `index.html` title is `POTO AI`
+- [ ] `public/poto/` contains local image files used by the landing
+- [ ] No `x-aip-token` URLs in committed source
+- [ ] README documents that files are reference clones for POTO AI demo
 
 **Verification:**
 
-- [ ] `npm run typecheck` and `npm run lint` pass
-- [ ] Manual: a temporary utility class renders in the browser (removed before merge if only used for smoke)
+- [ ] Files open locally; `ls apps/frontend/public/poto` shows expected set
 
 **Dependencies:** None
 
 **Files likely touched:**
 
-- `apps/frontend/package.json`
-- `apps/frontend/vite.config.ts`
-- `apps/frontend/src/app/index.css`
-- `apps/frontend/index.html`
-- root `package-lock.json`
+- `apps/frontend/public/poto/*`
+- `apps/frontend/public/poto/README.md`
 
-**Estimated scope:** Medium (3–5 files)
+**Estimated scope:** Small–Medium
 
-#### Task 2: Full-bleed, landing-aware AppLayout + POTO AI nav brand
+#### Task 2: Dark landing chrome — tokens + AppLayout
 
-**Description:** Make `/` full-bleed (no max-width cage). Header brand reads **POTO AI**. Auth/users routes keep a readable constrained shell. Nav still exposes Log in / Register or Users / Log out.
+**Description:** Add dark studio tokens (background, card, teal CTA). Update `AppLayout` on `/`: dark header, **POTO AI** brand, **Pricing** → `/register`, **Log in** → `/login` (and Register / Users / Log out when signed in). Keep constrained light shell for auth/users routes.
 
 **Acceptance criteria:**
 
-- [ ] On `/`, main content can span the viewport edge-to-edge
-- [ ] Header brand link shows `POTO AI` and routes to `/`
-- [ ] `/login`, `/register`, `/users` remain usable (not broken by full-bleed styles)
+- [ ] `/` header is dark full-bleed compatible with studio page
+- [ ] Pricing links to `/register`; Log in to `/login`
+- [ ] `/login` and `/users` remain readable (not broken by dark full-bleed)
 
 **Verification:**
 
-- [ ] Manual: visit `/` vs `/login` and confirm layout difference
-- [ ] `npm run typecheck` passes
+- [ ] Manual `/` vs `/login`
+- [ ] `npm run typecheck --workspace=@ai-workflow/frontend`
 
-**Dependencies:** Task 1
+**Dependencies:** None (can parallel Task 1)
 
 **Files likely touched:**
 
+- `apps/frontend/src/app/index.css`
 - `apps/frontend/src/components/layout/AppLayout.tsx`
+- `apps/frontend/src/components/ui/Button.tsx` (dark variants if needed)
 
-**Estimated scope:** Small (1–2 files)
+**Estimated scope:** Medium (2–3 files)
 
 ### Checkpoint: Foundation
 
-- [ ] Tailwind + fonts work
-- [ ] Layout full-bleed on `/` only
-- [ ] typecheck + lint clean
+- [ ] Assets on disk; dark header Pricing→register works; typecheck clean
 
-### Phase 2: Core landing
+### Phase 2: Studio home slices
 
-#### Task 3: Hero composition + HomePage component tests
+#### Task 3: Content module + RED tests for new structure
 
-**Description:** Rebuild `HomePage` hero per content budget: brand, one headline, one lede, Get started → `/register`, Log in → `/login`, dominant full-bleed visual. Add `HomePage.test.tsx` asserting brand, CTA hrefs (capability headings can be stubbed if sections land in Task 4 — prefer including section heading stubs or land Task 3+4 tightly).
+**Description:** Add `home-content.ts` mapping zones to local `/poto/...` paths and POTO AI copy (Image / Video / Audio). Rewrite `HomePage.test.tsx` for: brand, Pricing→`/register`, Log in→`/login`, Image/Video/Audio labels, prompt dock, no “Lumina”/“Seed” strings. Tests fail until UI lands.
 
 **Acceptance criteria:**
 
-- [ ] First viewport matches hero budget (no stats/cards/pill clusters)
-- [ ] CTAs link to `/register` and `/login`; label remains **Get started** regardless of auth
-- [ ] Tests cover brand text + both CTA hrefs
+- [ ] `home-content.ts` has carousel, featured, models, inspiration entries
+- [ ] Tests encode new structure and CTA hrefs
+- [ ] Tests fail on current light landing (RED)
 
 **Verification:**
 
-- [ ] `npm run test --workspace=@ai-workflow/frontend`
-- [ ] Manual: brand-first first viewport on desktop + mobile width
+- [ ] `npm run test --workspace=@ai-workflow/frontend -- src/features/home/HomePage.test.tsx` fails for missing structure
 
-**Dependencies:** Task 2
+**Dependencies:** Task 1 (paths), Task 2 optional
 
 **Files likely touched:**
 
-- `apps/frontend/src/features/home/HomePage.tsx`
+- `apps/frontend/src/features/home/home-content.ts`
 - `apps/frontend/src/features/home/HomePage.test.tsx`
 
-**Estimated scope:** Medium (2 files)
+**Estimated scope:** Small (2 files)
 
-#### Task 4: Image / Video / Audio sections + assets
+#### Task 4: Carousel + featured banner
 
-**Description:** Add three below-fold sections (one job each) with short copy and media stills from the internet/`public/`. Extend tests to assert the three capability headings. No generation UI.
+**Description:** Implement horizontal featured carousel (prev/next, keyboard) and featured model banner using `home-content` + local assets. Try now → `/register`. Wire into `HomePage`.
 
 **Acceptance criteria:**
 
-- [ ] Distinct Image, Video, and Audio sections exist below the fold
-- [ ] Each has one headline + one short supporting line + visual
-- [ ] Tests assert all three section headings
-- [ ] Asset sources are license-safe (comment or README note if required)
+- [ ] Carousel shows ≥2 promo cards with local images
+- [ ] Prev/next works; reduced-motion safe
+- [ ] Featured banner shows POTO AI copy + Try now → `/register`
 
 **Verification:**
 
-- [ ] `npm run test --workspace=@ai-workflow/frontend`
-- [ ] Manual: scroll `/` — sections read as separate jobs, not a card dashboard
+- [ ] Manual carousel; typecheck
 
 **Dependencies:** Task 3
 
 **Files likely touched:**
 
-- `apps/frontend/src/features/home/HomePage.tsx`
-- `apps/frontend/src/features/home/HomePage.test.tsx`
-- `apps/frontend/public/` (optional mirrored assets)
+- `features/home/components/FeatureCarousel.tsx`
+- `features/home/components/FeaturedBanner.tsx`
+- `features/home/HomePage.tsx`
 
-**Estimated scope:** Medium (2–4 files)
+**Estimated scope:** Medium (3–4 files)
 
-### Checkpoint: Core landing
+#### Task 5: Model grid + Inspiration section
 
-- [ ] Hero + three capabilities + CTAs complete
-- [ ] Frontend tests pass
-- [ ] Visual check: not purple/cream AI-default look
-
-### Phase 3: Polish
-
-#### Task 5: Closing CTA, CSS motion, Radix Slot CTAs
-
-**Description:** Add closing Get started strip. Introduce 2–3 intentional motions (hero entrance, section reveal, CTA hover) with `prefers-reduced-motion` / `motion-reduce:` respect. Wire primary CTAs through Radix `Slot` where it earns weight (e.g. shared button styles as `Link`).
+**Description:** 2×2 (or similar) model/capability cards (Image / Video / Audio + optional fourth) with Hot/New badges as content flags. Inspiration section with All / Image / Video filter chips and mosaic from `public/poto/`.
 
 **Acceptance criteria:**
 
-- [ ] Closing CTA → `/register` with label **Get started**
-- [ ] ≥2 motions present; reduced-motion disables/simplifies them
-- [ ] `@radix-ui/react-slot` is a declared dependency and used at least once for CTAs
+- [ ] Image, Video, Audio cards visible
+- [ ] Inspiration filters change visible set client-side
+- [ ] No Lumina/Seed* copy
 
 **Verification:**
 
-- [ ] Manual: load `/` with and without reduced motion
-- [ ] `npm run typecheck && npm run lint && npm run test --workspace=@ai-workflow/frontend`
+- [ ] Frontend tests progressing toward green; manual filter check
 
 **Dependencies:** Task 4
 
 **Files likely touched:**
 
-- `apps/frontend/package.json`
-- `apps/frontend/src/features/home/HomePage.tsx`
-- `apps/frontend/src/components/` (optional small `Button` with Slot)
-- `apps/frontend/src/app/index.css` (keyframes if needed)
-- `package-lock.json`
+- `features/home/components/ModelGrid.tsx`
+- `features/home/components/InspirationGallery.tsx`
+- `features/home/HomePage.tsx`
+- `HomePage.test.tsx` (if needed)
 
-**Estimated scope:** Medium (3–5 files)
+**Estimated scope:** Medium (3–4 files)
+
+#### Task 6: Prompt dock + final polish
+
+**Description:** Floating “Describe the scene you want to generate” dock; submit or primary action → `/register`. Ensure page padding so dock doesn’t cover inspiration. Motion polish; update tests to green; remove old light marketing sections entirely.
+
+**Acceptance criteria:**
+
+- [ ] Prompt dock visible; interaction → `/register`
+- [ ] All HomePage tests pass
+- [ ] No promo modal in the tree
+- [ ] Mobile: no horizontal overflow
+
+**Verification:**
+
+- [ ] `npm run typecheck && npm run lint && npm run test --workspace=@ai-workflow/frontend`
+
+**Dependencies:** Task 5
+
+**Files likely touched:**
+
+- `features/home/components/PromptDock.tsx`
+- `features/home/HomePage.tsx`
+- `HomePage.test.tsx`
+- `AppLayout.tsx` / `index.css` as needed
+
+**Estimated scope:** Medium (3–4 files)
 
 ### Checkpoint: Complete
 
-- [ ] All spec success criteria met
-- [ ] Root gates: `npm run typecheck`, `npm run lint`, `npm run test` (backend) + frontend tests
-- [ ] Ready for `/build` completion review / PR
+- [ ] Spec success criteria met (zones, branding, CTAs, local assets, no modal)
+- [ ] Root typecheck + lint + frontend tests green
+- [ ] Ready for `/build` completion → `/test` → `/review`
 
 ## Risks and Mitigations
 
-| Risk                               | Impact | Mitigation                                        |
-| ---------------------------------- | ------ | ------------------------------------------------- |
-| Tailwind v4 Vite plugin friction   | Med    | Fall back to Tailwind v3 + PostCSS per spec       |
-| Remote images fail in CI/offline   | Low    | Mirror critical assets into `public/`             |
-| Full-bleed breaks auth pages       | Med    | Route-aware layout; verify `/login` at checkpoint |
-| Overusing Radix / adding UI kit    | Low    | Slot-only unless a concrete need appears          |
-| Design drifts to AI-default purple | Med    | Stick to graphite + teal tokens from the start    |
+| Risk                                      | Impact | Mitigation                                                 |
+| ----------------------------------------- | ------ | ---------------------------------------------------------- |
+| Tokenized CDN URLs expire during download | Med    | Download in one browser session; persist files immediately |
+| Large binary assets bloat git             | Med    | Cap resolution/count; prefer webp/jpg under ~500KB each    |
+| Copyright of cloned stills                | Med    | Demo-only; README note; user approved clone                |
+| Dark layout breaks auth pages             | Med    | Route-aware `AppLayout` (already patterned)                |
+| Over-scoping full Lumina app shell        | Low    | Hamburger no-op; no generation                             |
 
 ## Parallelization
 
-- Mostly sequential (layout depends on Tailwind; sections depend on hero shell).
-- After Task 1: asset sourcing can happen in parallel with Task 2.
+- Task 1 (assets) ∥ Task 2 (chrome)
+- After Task 3: Tasks 4→5→6 sequential
 
 ## Open Questions
 
-None — spec decisions are locked.
+None — locked in spec.

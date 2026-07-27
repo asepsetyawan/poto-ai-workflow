@@ -1,195 +1,174 @@
-# Spec: POTO AI Landing Page
+# Spec: POTO AI Landing Page (Lumina-inspired)
+
+**Reference:** [ByteDance Lumina](https://ai.byteplus.com/lumina/en)  
+**Supersedes:** prior POTO AI marketing one-pager (graphite/teal light sections). This revision redesigns `/` to match Lumina’s creative-studio home layout, rebranded for **POTO AI**.
 
 ## Objective
 
-Replace the current starter `HomePage` with a marketing landing page for **POTO AI** — a product that lets creators generate **image**, **video**, and **audio** with AI.
+Rebuild the public `/` landing in `apps/frontend` so it **visually and structurally mirrors** Lumina’s English landing — dark creative hub with carousel, featured model strip, capability cards, inspiration grid, and floating prompt bar — while all branding, copy, and CTAs are **POTO AI**.
 
-**Primary user:** a creator or marketer evaluating the product for the first time (unauthenticated).
+**Primary user:** creator discovering POTO AI (unauthenticated).
 
-**Job to be done:** understand what the platform does in one viewport scroll, feel the brand, and take a clear next step (sign up or sign in).
+**Job to be done:** feel like a modern AI media studio in the first viewport, scan featured models/capabilities, and reach **Get started** / **Log in**.
 
-**Success looks like:** a visitor lands on `/`, immediately recognizes **POTO AI** and the three media capabilities, and can reach register/login without hunting.
+**Success looks like:** a side-by-side glance at Lumina vs POTO AI reads as the same product pattern (layout, density, dark glass UI), but unmistakably **POTO AI** (no Lumina / ByteDance / Seed* names).
 
 ### User stories
 
-1. As a visitor, I see **POTO AI** as the hero-level brand signal, one headline, one supporting line, and a primary CTA.
-2. As a visitor, I understand that I can generate image, video, and audio — each called out in its own focused section.
-3. As a visitor, I can start with **Get started** → `/register` or **Log in** → `/login` from the hero CTA group and the site header.
-4. As an authenticated user, I still land on `/`, see the same landing page, and still see **Get started** (not a studio stub). Existing app links (e.g. Users) remain available in the layout when signed in.
+1. As a visitor, I see a dark full-bleed studio home with **POTO AI** in the header.
+2. As a visitor, I can browse a horizontal **featured carousel** of image / video / audio offerings.
+3. As a visitor, I see a **featured model banner** (headline + lede + Try now) with a large visual.
+4. As a visitor, I see a **model/capability grid** (image, video, audio at minimum) with short labels.
+5. As a visitor, I see an **Inspiration** section with filter chips (All / Image / Video) and a media mosaic.
+6. As a visitor, a **floating prompt bar** invites me to describe a scene; submitting / focusing routes me toward register (no real generation).
+7. As a visitor, header **Log in** → `/login`; primary CTA → `/register` (labeled Get started or Try now consistently mapped).
+8. As a signed-in user, I still see the same landing; CTAs remain Get started / Try now → `/register` (locked earlier).
 
-## Decisions (locked)
+## Decisions (locked from prior spec)
 
-| Question       | Decision                                                               |
-| -------------- | ---------------------------------------------------------------------- |
-| Product name   | **POTO AI**                                                            |
-| Scope          | Landing page only — no generation studio UI/APIs                       |
-| Feature folder | Evolve `features/home/`                                                |
-| Layout on `/`  | Full-bleed (escape the 960px `AppLayout` cage)                         |
-| Styling / UI   | **Tailwind CSS** + **Radix UI**                                        |
-| Assets         | May fetch from the internet (remote URLs or downloaded into `public/`) |
-| Signed-in CTA  | Always **Get started** → `/register`                                   |
+| Question       | Decision                                          |
+| -------------- | ------------------------------------------------- |
+| Product name   | **POTO AI**                                       |
+| Scope          | Landing page only — no generation studio UI/APIs  |
+| Feature folder | `features/home/`                                  |
+| Layout on `/`  | Full-bleed landing-aware `AppLayout`              |
+| Styling / UI   | Tailwind CSS v4 + Radix (Slot / Dialog as needed) |
+| Signed-in CTA  | Still **Get started** / Try now → `/register`     |
+
+## Decisions (this revision — locked)
+
+| Question         | Decision                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| Visual reference | Recreate [Lumina EN landing](https://ai.byteplus.com/lumina/en) layout & interaction pattern                 |
+| Theme            | **Dark** creative-studio UI                                                                                  |
+| Accent           | Teal/cyan primary CTAs                                                                                       |
+| Promo modal      | **Excluded** — do not ship                                                                                   |
+| Pricing          | Header **Pricing** → `/register`                                                                             |
+| Assets           | **Clone** Lumina preview stills into `apps/frontend/public/poto/` (demo use; no live tokenized CDN hotlinks) |
+| Naming           | Brand and product labels use **POTO AI** (capability cards: Image / Video / Audio under POTO AI)             |
+| Generation       | Prompt bar navigates to `/register` only                                                                     |
+
+## Assumptions (accepted)
+
+1. Recreate UI pattern; do not claim to be Lumina/BytePlus.
+2. No ByteDance trademarks in user-visible copy (Lumina, Seedream, Seedance, etc.).
+3. Assets are downloaded once into `public/poto/` and referenced by local paths.
+4. Inspiration grid is static; filters are client-side only.
+5. Hamburger can be a simple no-op or link list — full app shell out of scope.
+6. Auth/users routes stay usable under landing-aware layout.
+
+## Reference layout (mapped to POTO AI)
+
+Observed structure on Lumina (first viewport + below):
+
+| Zone         | Lumina pattern                                          | POTO AI adaptation                                           |
+| ------------ | ------------------------------------------------------- | ------------------------------------------------------------ |
+| Header       | ☰ + brand · Pricing · Login                            | ☰ + **POTO AI** · Pricing → `/register` · Log in → `/login` |
+| Carousel     | Large dual cards, prev/next                             | Featured Image / Video / Audio promos branded **POTO AI**    |
+| Featured row | Model title + lede + Try now + hero still               | **POTO AI** featured capability + Try now → `/register`      |
+| Model grid   | 2×2 cards with Hot/New badges                           | Image / Video / Audio (+ optional 4th) under POTO AI         |
+| Prompt dock  | Floating “Describe the scene…”                          | Same UX; Enter / click → `/register`                         |
+| Inspiration  | “Fresh inspiration…” + All/Image/Video filters + mosaic | Same; local `public/poto/` assets; client-side filters       |
+| Promo modal  | 35% Extra Credits                                       | **Out of scope — excluded**                                  |
+
+**Naming:** user-visible brand is **POTO AI** everywhere; capability titles are Image / Video / Audio (no Seed* / Lumina names).
 
 ## Tech Stack
 
-| Layer      | Choice                                                                                                                                               |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| App        | `apps/frontend` (React 19 + Vite 6 + React Router 7)                                                                                                 |
-| Styling    | **Tailwind CSS** (v4 preferred if it installs cleanly with Vite 6; else v3)                                                                          |
-| Primitives | **Radix UI** primitives as needed (e.g. `@radix-ui/react-slot`, navigation/dialog only if a concrete a11y need appears — do not add unused packages) |
-| Fonts      | Via Tailwind / Google Fonts — expressive display + readable body (no Inter/Roboto/Arial/system as the primary stack)                                 |
-| Auth CTAs  | Existing `/register` and `/login` routes — no new auth API                                                                                           |
-| Assets     | Unsplash / similar remote imagery or files under `apps/frontend/public/` — attribute if license requires                                             |
-| Backend    | **Out of scope** — no generation APIs                                                                                                                |
-
-**Approved new dependencies (this feature):** Tailwind CSS (+ Vite plugin / PostCSS as required by the chosen Tailwind major), and Radix UI packages actually used by the landing. Ask before adding animation libraries (e.g. framer-motion) or full UI kits on top of Radix.
+| Layer      | Choice                                                                   |
+| ---------- | ------------------------------------------------------------------------ |
+| App        | `apps/frontend` (React 19 + Vite 6 + React Router 7)                     |
+| Styling    | Tailwind v4 (already wired) + dark theme tokens                          |
+| Primitives | `@radix-ui/react-slot` (existing); no Dialog (promo modal excluded)      |
+| Motion     | CSS / Tailwind only unless framer-motion approved                        |
+| Assets     | Cloned into `apps/frontend/public/poto/` — reference by local paths only |
+| Auth CTAs  | `/register`, `/login`                                                    |
+| Backend    | Out of scope                                                             |
 
 ## Commands
 
 ```bash
-# From repo root
-npm run dev:frontend          # SPA on :5173
-npm run typecheck             # all workspaces
-npm run lint                  # all workspaces
-npm run test --workspace=@ai-workflow/frontend   # home/landing-related tests
+npm run dev:frontend
+npm run typecheck
+npm run lint
+npm run test --workspace=@ai-workflow/frontend
 ```
 
 ## Project Structure
 
 ```
 apps/frontend/
-  index.html                   # font preconnect / stylesheet if needed
-  public/                      # optional downloaded hero/section assets
+  public/poto/                 # downloaded or substitute stills
   src/
-    app/
-      routes.tsx               # `/` → HomePage
-      index.css                # Tailwind entry (@import "tailwindcss" or directives)
-    components/layout/
-      AppLayout.tsx            # brand → POTO AI; full-bleed on `/`
+    app/index.css              # dark theme tokens for landing
+    components/layout/AppLayout.tsx   # dark header on `/`
+    components/ui/Button.tsx   # existing Slot button (extend variants)
     features/home/
-      HomePage.tsx             # landing composition
-      HomePage.test.tsx        # brand, three capabilities, CTA hrefs
-docs/specs/
-  poto-ai-landing.md           # this spec
+      HomePage.tsx             # composition
+      HomePage.test.tsx
+      components/              # Carousel, FeaturedBanner, ModelGrid, PromptDock, Inspiration
+      home-content.ts          # copy + asset paths (no secrets)
+docs/specs/poto-ai-landing.md  # this spec
 ```
 
 ## Code Style
 
-Match existing feature layout: page under `features/home/`, routes in `app/routes.tsx`, shared chrome in `components/layout/`.
+- Keep page composition in `HomePage`; extract presentational pieces under `features/home/components/`.
+- Content/copy/asset paths in a plain `home-content.ts` module for easy edit.
+- No BytePlus API calls; no tokenized CDN URLs in source.
+- Semantic sections + keyboardable carousel controls.
 
-```tsx
-// features/home/HomePage.tsx — illustrative shape
-import { Link } from 'react-router-dom';
+## Design direction
 
-export function HomePage() {
-  return (
-    <div className="min-h-screen">
-      <section className="relative min-h-svh ..." aria-labelledby="landing-brand">
-        <p id="landing-brand" className="...">
-          POTO AI
-        </p>
-        <h1 className="...">Create image, video, and audio with AI</h1>
-        <p className="...">One studio for every medium your story needs.</p>
-        <div className="flex gap-4">
-          <Link to="/register">Get started</Link>
-          <Link to="/login">Log in</Link>
-        </div>
-      </section>
-      {/* One section each: Image / Video / Audio — one job per section */}
-    </div>
-  );
-}
-```
-
-**Conventions:**
-
-- Prefer Tailwind utility classes; use CSS variables in `@theme` / `:root` for brand tokens.
-- Use Radix only where it earns its weight (accessible trigger/slot patterns) — not a wrapping layer over every `<a>`.
-- Semantic HTML + `aria-labelledby` on major sections.
-- No global state libraries; no generation business logic in `HomePage`.
-
-## Design direction (landing-specific)
-
-Follow the repo frontend design rules for promotional surfaces:
-
-| Rule                   | Application here                                                                                             |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
-| One composition        | First viewport = brand + one headline + one lede + CTA group + one dominant visual plane                     |
-| Brand first            | **POTO AI** is hero-level, not a nav-only label                                                              |
-| Full-bleed hero        | Edge-to-edge visual plane / background — not an inset card                                                   |
-| No cards in hero       | Capability areas below: default no cards                                                                     |
-| One job per section    | Separate Image / Video / Audio sections after the hero                                                       |
-| Motion                 | 2–3 intentional motions (hero fade/rise, section reveal, CTA hover); respect `prefers-reduced-motion`        |
-| Avoid AI-default looks | No purple-indigo gradients; no cream+terracotta serif broadsheet; no dark-mode-by-default glow/pill clusters |
-
-**Chosen visual direction:** cool graphite + electric teal accent on a layered photographic/gradient atmosphere (cinema/studio feel). Display font e.g. Syne or Outfit; body e.g. Source Sans 3. Light-leaning page; dark accents for contrast only.
-
-**Hero content budget:**
-
-1. Brand: **POTO AI**
-2. Headline: one line on multi-medium creation
-3. Supporting sentence: one short line
-4. CTA group: **Get started** → `/register`, **Log in** → `/login` (same for signed-in users)
-5. Dominant visual: full-bleed studio/media atmosphere (CSS + internet/public asset — no floating badges/overlays)
-
-**Below the fold (ordered):**
-
-1. Image generation — one headline, one short line, optional media still
-2. Video generation — same pattern
-3. Audio generation — same pattern
-4. Closing CTA strip — **Get started** → `/register`
-
-**Out of first viewport:** pricing, feature matrices, stats strips, schedule/event blocks, pill clusters, icon rows.
+- **Dark graphite** backgrounds (`~#0a0a0b`–`#17171a`), elevated cards with soft borders.
+- **Teal/cyan** primary pills (Login / Try now).
+- Large rounded cards (~16–24px), dense studio dashboard — cards **are** allowed here because they are the interaction containers (carousel / model pickers), unlike the prior “no cards in marketing hero” one-pager.
+- Brand **POTO AI** must remain a hero-level signal in the header; featured banner title must not overpower the brand.
+- ≥2 motions (carousel slide, card/prompt hover or entrance); honor `prefers-reduced-motion`.
+- Mobile: stack carousel, keep prompt dock usable; no horizontal page overflow.
 
 ## Testing Strategy
 
-| Level      | What                                                                                               | Where                             |
-| ---------- | -------------------------------------------------------------------------------------------------- | --------------------------------- |
-| Component  | Brand “POTO AI”, headline, three capability headings, Get started → `/register`, Log in → `/login` | `features/home/HomePage.test.tsx` |
-| Manual     | First viewport brand test; mobile + desktop; reduced motion                                        | `npm run dev:frontend`            |
-| Repo gates | typecheck + lint + frontend tests                                                                  | root scripts                      |
-
-Coverage expectation: assert user-visible structure and CTA targets; do not snapshot entire Tailwind output.
+| Level      | What                                                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Component  | Brand “POTO AI”; Log in → `/login`; Get started/Try now → `/register`; Image/Video/Audio labels present; prompt dock visible |
+| Manual     | Visual parity check vs Lumina layout (structure, not pixel-perfect); mobile; no promo modal                                  |
+| Repo gates | typecheck, lint, frontend tests                                                                                              |
 
 ## Boundaries
 
 **Always:**
 
-- Keep `/` as the public landing route served by `features/home`.
-- Wire CTAs to existing `/register` and `/login`; signed-in users still see **Get started**.
-- Full-bleed layout on `/` (landing-aware `AppLayout` exception is fine).
-- Run `npm run typecheck`, `npm run lint`, and frontend tests before calling the task done.
-- Preserve existing auth and users flows.
-- Meet accessibility basics: landmarks, keyboard-reachable CTAs, sufficient contrast.
-- Prefer license-safe remote assets; document source if required.
+- Full-bleed dark landing on `/` only; auth/users remain usable.
+- Strip all Lumina/ByteDance/Seed* trademarks from UI copy.
+- Prefer local `public/poto/` assets over expiring CDN tokens.
+- Preserve existing auth flows.
+- Run typecheck, lint, frontend tests before done.
 
 **Ask first:**
 
-- Adding dependencies beyond Tailwind + the Radix packages actually used (e.g. framer-motion, shadcn full kit).
-- Adding real generation APIs or backend modules.
-- Changing the product name away from **POTO AI**.
-- Replacing `AppLayout` behavior for _all_ routes in a breaking way (auth/users pages must stay usable).
-- Adding pricing, blog, or dashboard routes.
+- Adding a real Pricing page, credits system, or generation APIs.
+- Adding framer-motion / heavy UI kits.
+- Re-introducing a promo modal.
 
 **Never:**
 
-- Implement actual image/video/audio generation in this slice.
-- Commit secrets or hardcode API keys for media providers.
-- Ship a card-heavy dashboard-style first viewport.
-- Break protected `/users` or auth flows.
+- Hotlink production BytePlus `x-aip-token` URLs as permanent assets.
+- Implement real image/video/audio generation in this slice.
+- Leave “Lumina”, “ByteDance”, or Seed* strings in user-visible UI.
+- Break `/login`, `/register`, `/users`.
 
 ## Success Criteria
 
-- [ ] `/` renders the **POTO AI** landing (not the “AI Workflow” starter blurb).
-- [ ] First viewport shows brand, one headline, one supporting sentence, CTA group, and a dominant full-bleed visual — nothing else competing.
-- [ ] Page includes distinct Image, Video, and Audio sections below the fold.
-- [ ] Primary CTAs navigate to `/register` and `/login`; signed-in users still see **Get started**.
-- [ ] Tailwind is configured and used for the landing; Radix is used only where needed.
-- [ ] Layout is full-bleed on `/` and works on mobile and desktop without horizontal overflow.
-- [ ] At least 2 intentional motion treatments exist and respect `prefers-reduced-motion`.
-- [ ] `HomePage.test.tsx` covers brand + three capabilities + CTA hrefs.
-- [ ] `npm run typecheck`, `npm run lint`, and `npm run test --workspace=@ai-workflow/frontend` pass.
+- [ ] `/` matches Lumina’s zone structure: header, carousel, featured banner, model grid, prompt dock, inspiration.
+- [ ] All visible branding/copy is POTO AI (no Lumina/Seed*/ByteDance).
+- [ ] Primary CTAs → `/register`; Log in → `/login`.
+- [ ] Assets load from `public/poto/` or approved substitutes (no dead tokenized URLs).
+- [ ] Dark theme + teal accents; works on mobile and desktop.
+- [ ] `HomePage` tests updated for new structure.
+- [ ] `npm run typecheck`, `npm run lint`, `npm run test --workspace=@ai-workflow/frontend` pass.
 - [ ] No backend/schema changes.
 
 ## Open Questions
 
-None — decisions above are locked. Ready for `/plan`.
+None — decisions locked. Ready for `/plan` → `/build`.

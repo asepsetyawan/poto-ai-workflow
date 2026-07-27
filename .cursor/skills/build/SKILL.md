@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # /build — Build incrementally
 
-Read and follow `.agents/skills/incremental-implementation/SKILL.md`. Implement one task
+Read and follow `.cursor/skills/incremental-implementation/SKILL.md`. Implement one task
 from the plan at a time, as a thin vertical slice — not the whole feature at once.
 
 For each slice, also apply:
@@ -17,7 +17,7 @@ For each slice, also apply:
   (`apps/backend/.cursor/skills/backend-architecture/`,
   `apps/frontend/.cursor/skills/frontend-architecture/`, `.cursor/rules/backend.mdc` /
   `frontend.mdc`).
-- `.agents/skills/test-driven-development/SKILL.md` — write the test before or alongside
+- `.cursor/skills/test-driven-development/SKILL.md` — write the test before or alongside
   the implementation, not after.
 
 Verify each slice (`npm run typecheck && npm run lint`, relevant tests) before moving to

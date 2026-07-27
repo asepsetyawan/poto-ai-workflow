@@ -12,11 +12,11 @@ type ButtonProps = {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'rounded-md bg-teal-500 px-5 py-2.5 font-medium text-graphite-50 no-underline transition hover:bg-teal-400',
+    'inline-flex items-center justify-center gap-2 rounded-full bg-cyan-400 px-5 py-2.5 font-semibold text-studio-950 no-underline transition hover:bg-cyan-300',
   secondary:
-    'rounded-md border border-graphite-100/40 px-5 py-2.5 font-medium text-graphite-50 no-underline transition hover:border-teal-400 hover:text-teal-400',
+    'inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-black/40 px-5 py-2.5 font-medium text-studio-50 no-underline backdrop-blur-sm transition hover:border-cyan-400 hover:text-cyan-300',
   ghost:
-    'rounded-md px-5 py-2.5 font-medium text-teal-400 no-underline transition hover:text-teal-500',
+    'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 font-medium text-cyan-300 no-underline transition hover:text-cyan-400',
 };
 
 export function Button({
