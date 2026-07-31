@@ -7,6 +7,10 @@ built entirely on Cursor's native customization — no `CLAUDE.md`/`AGENTS.md` l
 Conventions live there, not in a separate doc, so they're always in context and scoped
 to the files they apply to.
 
+![AI-assisted engineering workflow — from Kanban ticket through local planner/build/test agents, CI, tech-lead review, staging QA, and production monitoring](docs/images/ai-workflow.png)
+
+More detail: [docs/agentic-engineering-workflow.md](docs/agentic-engineering-workflow.md) and [docs/team-workflow-kanban-to-production.md](docs/team-workflow-kanban-to-production.md).
+
 ## Stack
 
 | App      | Location        | Tech                                                         |
